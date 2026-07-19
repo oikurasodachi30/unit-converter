@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Unit Converter</title>
+    <style>
+        /* Catppuccin Mocha Theme Variables */
+        :root {
+            --base: #1e1e2e;
+            --mantle: #181825;
+            --surface0: #313244;
+            --surface1: #45475a;
+            --text: #cdd6f4;
+            --subtext0: #a6adc8;
+            --blue: #89b4fa;
+            --blue-hover: #b4befe;
+            --red: #f38ba8;
+            --crust: #11111b;
+        }
+
+        body { 
+            font-family: system-ui, sans-serif; 
+            max-width: 500px; 
+            margin: 40px auto; 
+            padding: 0 20px; 
+            background-color: var(--base);
+            color: var(--text);
+        }
+
+        h1 {
+            color: var(--text);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Tabs */
+        .tabs { 
+            display: flex; 
+            border-bottom: 2px solid var(--surface0); 
+            margin-bottom: 20px; 
+        }
+        .tab-btn { 
+            flex: 1;
+            padding: 12px 20px; 
+            border: none; 
+            background: none; 
+            cursor: pointer; 
+            font-size: 16px; 
+            font-weight: bold; 
+            color: var(--subtext0);
+            transition: color 0.2s;
+        }
+        .tab-btn:hover {
+            color: var(--text);
+        }
+        .tab-btn.active { 
+            color: var(--blue); 
+            border-bottom: 2px solid var(--blue); 
+            margin-bottom: -2px; 
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Forms */
+        form { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 14px; 
+            background: var(--mantle); 
+            padding: 25px; 
+            border-radius: 8px; 
+            border: 1px solid var(--surface0); 
+        }
+        label { 
+            font-weight: 500; 
+            font-size: 14px; 
+            color: var(--text);
+        }
+        input, select { 
+            padding: 10px; 
+            font-size: 15px; 
+            border-radius: 4px; 
+            border: 1px solid var(--surface1); 
+            background-color: var(--base);
+            color: var(--text);
+            outline: none;
+        }
+        input:focus, select:focus {
+            border-color: var(--blue);
+        }
+        
+        button { 
+            background: var(--blue); 
+            color: var(--crust); 
+            border: none; 
+            font-weight: bold; 
+            font-size: 15px;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer; 
+            margin-top: 10px; 
+            transition: background 0.2s;
+        }
+        button:hover { 
+            background: var(--blue-hover); 
+        }
+
+        /* Result View */
+        .result-container {
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--mantle); 
+            padding: 40px 20px; 
+            border-radius: 8px; 
+            border: 1px solid var(--surface0);
+            text-align: center;
+        }
+        .result { 
+            font-weight: bold; 
+            font-size: 24px; 
+            color: var(--blue); 
+            margin: 0 0 25px 0;
+            word-break: break-word;
+        }
+        .result-container button {
+            margin-top: 0;
+            width: 50%;
+            background: var(--surface1);
+            color: var(--text);
+        }
+        .result-container button:hover {
+            background: var(--surface0);
+        }
+        .error-text {
+            color: var(--red);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Unit Converter</h1>
+
+    <!-- Tab Buttons -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(event, 'length')">Length</button>
+        <button class="tab-btn" onclick="switchTab(event, 'weight')">Weight</button>
+        <button class="tab-btn" onclick="switchTab(event, 'temperature')">Temperature</button>
+    </div>
+
+    <!-- Length Tab -->
+    <div id="length" class="tab-content active">
+        <!-- Form View -->
+        <form id="lengthForm" onsubmit="handleFormSubmit(event, '/api/convert/length', 'lengthResult', 'length', 4)">
+            <label for="lengthAmount">Amount:</label>
+            <input type="number" id="lengthAmount" name="amount" value="1" step="any" required>
+            
+            <label for="lengthFrom">From:</label>
+            <select id="lengthFrom" name="from">
+                <option>CENTIMETERS</option>
+                <option selected>METERS</option>
+                <option>KILOMETERS</option>
+            </select>
+            
+            <label for="lengthTo">To:</label>
+            <select id="lengthTo" name="to">
+                <option>CENTIMETERS</option>
+                <option>METERS</option>
+                <option selected>KILOMETERS</option>
+            </select>
+            
+            <button type="submit">Convert</button>
+        </form>
+
+        <!-- Result View -->
+        <div id="lengthResultContainer" class="result-container">
+            <p id="lengthResult" class="result"></p>
+            <button onclick="resetView('length')">Convert Another</button>
+        </div>
+    </div>
+
+    <!-- Weight Tab -->
+    <div id="weight" class="tab-content">
+        <form id="weightForm" onsubmit="handleFormSubmit(event, '/api/convert/weight', 'weightResult', 'weight', 4)">
+            <label for="weightAmount">Weight:</label>
+            <input type="number" id="weightAmount" name="weight" value="1" step="any" required>
+            
+            <label for="weightFrom">From:</label>
+            <select id="weightFrom" name="from">
+                <option>MILLIGRAMS</option>
+                <option selected>GRAMS</option>
+                <option>KILOGRAMS</option>
+            </select>
+            
+            <label for="weightTo">To:</label>
+            <select id="weightTo" name="to">
+                <option>MILLIGRAMS</option>
+                <option>GRAMS</option>
+                <option selected>KILOGRAMS</option>
+            </select>
+            
+            <button type="submit">Convert</button>
+        </form>
+
+        <div id="weightResultContainer" class="result-container">
+            <p id="weightResult" class="result"></p>
+            <button onclick="resetView('weight')">Convert Another</button>
+        </div>
+    </div>
+
+    <!-- Temperature Tab -->
+    <div id="temperature" class="tab-content">
+        <form id="temperatureForm" onsubmit="handleFormSubmit(event, '/api/convert/temperature', 'tempResult', 'temperature', 2)">
+            <label for="tempAmount">Temperature:</label>
+            <input type="number" id="tempAmount" name="temperature" value="0" step="any" required>
+            
+            <label for="tempFrom">From:</label>
+            <select id="tempFrom" name="from">
+                <option selected>CELSIUS</option>
+                <option>FAHRENHEIT</option>
+                <option>KELVIN</option>
+            </select>
+            
+            <label for="tempTo">To:</label>
+            <select id="tempTo" name="to">
+                <option>CELSIUS</option>
+                <option selected>FAHRENHEIT</option>
+                <option>KELVIN</option>
+            </select>
+            
+            <button type="submit">Convert</button>
+        </form>
+
+        <div id="temperatureResultContainer" class="result-container">
+            <p id="tempResult" class="result"></p>
+            <button onclick="resetView('temperature')">Convert Another</button>
+        </div>
+    </div>
+
+    <script>
+        // Switch tabs and reset views so hidden forms don't stay hidden when returning
+        function switchTab(event, tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+
+            // Reset all tabs to the form view just in case
+            ['length', 'weight', 'temperature'].forEach(resetView);
+        }
+
+        // Show the form and hide the result container
+        function resetView(tabId) {
+            document.getElementById(tabId + 'Form').style.display = 'flex';
+            document.getElementById(tabId + 'ResultContainer').style.display = 'none';
+        }
+
+        // Handle the submission, hide the form, and show the result
+        async function handleFormSubmit(event, url, resultId, tabId, decimalPlaces) {
+            event.preventDefault(); 
+            
+            const form = event.target;
+            const resultElement = document.getElementById(resultId);
+            const resultContainer = document.getElementById(tabId + 'ResultContainer');
+            const formData = new URLSearchParams(new FormData(form));
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+                
+                if (!response.ok) throw new Error("Server error during conversion.");
+                
+                const data = await response.json();
+                
+                // Format the text and remove any previous error classes
+                resultElement.classList.remove('error-text');
+                resultElement.innerText = 
+                    `${data.originalAmount} ${data.fromUnit} = ${data.result.toFixed(decimalPlaces)} ${data.toUnit}`;
+                    
+                // Swap the views!
+                form.style.display = 'none';
+                resultContainer.style.display = 'flex';
+
+            } catch (error) {
+                // If an error happens, we still show the result screen but with red text
+                resultElement.classList.add('error-text');
+                resultElement.innerText = "Error: " + error.message;
+                
+                form.style.display = 'none';
+                resultContainer.style.display = 'flex';
+            }
+        }
+    </script>
+</body>
+</html>
