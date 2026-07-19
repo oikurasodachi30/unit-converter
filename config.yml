@@ -3,9 +3,11 @@ server:
   applicationConnectors:
     - type: http
       port: 8080
+      bindHost: 0.0.0.0      # Open to the public internet
   adminConnectors:
     - type: http
       port: 8081
+      bindHost: 127.0.0.1    # Locked down to localhost only
 
 logging:
   level: INFO
